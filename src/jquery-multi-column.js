@@ -50,8 +50,36 @@
                 left: this.dom.width() - width,
                 width: width
             });
+        },
+        
+        isBreakingParagraph: function(aParagraph) {
+            // curiously the position left is reported on the next column, 
+            // even if it's beginning is rendered on the previous
+            var previous = aParagraph.prev();
+            if (0 === previous.length) { // first element
+                previous = aParagraph.parent()
+            }
+            return aParagraph.position().left > previous.position().left;
+        },
+        
+        spanifyParagraph: function(aParagraph) {
+            // only work on text nodes, everything else we ignore for now
+            aParagraph
+                .contents()
+                .filter(function() { return this.nodeType == 3;})
+                .each(function() {
+                    $(this).parent().html($(this).text().trim().split(/\s+/).join(' <span/>'))
+                });
+        },
+        
+        isBreakingSpan: function(aSpan) {
+            // in difference to paragraphs the spans have a width of 0 which the 
+            // rendering engine seems to take as an agreement to render it on the previous column
+            var next = aSpan.next();
+            // how to deal with the last span?
+            return aSpan.position().top < next.position().top;
+            
         }
-          
     })
     
     context.breakingParagraphs = function() {

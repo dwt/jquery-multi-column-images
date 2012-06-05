@@ -60,6 +60,10 @@ describe("jquery multi column", function() {
             expect(this.plugin.widthOfImageSpanningTwoColumns(createDiv(3, 100))).toBeLessThan(70)
         })
         
+    })
+    
+    describe("extracting images", function() {
+        
         it("should position the first image at the top left over two columns", function() {
             var columns = createDiv(3).multiColumnizeImages()
             var image = columns.find('img')
@@ -70,6 +74,32 @@ describe("jquery multi column", function() {
         })
         
         // it("should only position the first image per page")
+    })
+    
+    describe("reflowing text", function() {
         
+        it("should find the breaking paragraph", function() {
+            var div = createDiv(3, 300)
+            expect(this.plugin.isBreakingParagraph(div.find('p').eq(0))).toBeFalsy()
+            expect(this.plugin.isBreakingParagraph(div.find('p').eq(1))).toBeTruthy()
+        })
+        
+        it("should spanify paragraph", function() {
+            var p = createDiv().find('p').eq(1)
+            expect(p).not.toContain('span')
+            this.plugin.spanifyParagraph(p)
+            expect(p).toContain('span')
+            expect(p.find('span').length).toBe(2)
+        })
+        
+        it("should find breaking span", function() {
+            var p = createDiv().find('p').each(_(function(index, value) {
+                this.plugin.spanifyParagraph($(value))
+            }).bind(this))
+            var breakingP = p.eq(1)
+            debugger
+            expect(this.plugin.isBreakingSpan(breakingP.find('span').eq(0))).toBeTruthy()
+            expect(this.plugin.isBreakingSpan(breakingP.find('span').eq(1))).toBeTruthy()
+        })
     })
 })
